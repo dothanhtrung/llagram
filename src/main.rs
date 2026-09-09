@@ -9,16 +9,27 @@ mod config;
 mod llama;
 
 use crate::config::Config;
-use crate::llama::{ChatMessage, LlamaClient};
+use crate::llama::{
+    ChatMessage,
+    LlamaClient,
+};
 use clap::Parser;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+use std::sync::{
+    Arc,
+    Mutex,
+};
 use std::time::Duration;
 use teloxide::sugar::request::RequestReplyExt;
 use teloxide::types::ChatAction;
 use teloxide::utils::command::BotCommands;
-use teloxide::{Bot, prelude::Requester, requests::ResponseResult, types::Message};
+use teloxide::{
+    Bot,
+    prelude::Requester,
+    requests::ResponseResult,
+    types::Message,
+};
 use tracing_subscriber::EnvFilter;
 
 const MAX_HISTORY: usize = 40;
@@ -70,9 +81,7 @@ struct App {
 #[tokio::main]
 async fn main() {
     let subscriber = tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
-        )
+        .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
         .with_thread_ids(true)
         .finish();
     tracing::subscriber::set_global_default(subscriber).unwrap_or_default();
@@ -143,12 +152,7 @@ async fn handle_message(app: Arc<App>, bot: Bot, msg: Message) -> ResponseResult
     handle_chat(app, bot, msg, text).await
 }
 
-async fn handle_command(
-    app: Arc<App>,
-    bot: Bot,
-    msg: Message,
-    cmd: Command,
-) -> ResponseResult<()> {
+async fn handle_command(app: Arc<App>, bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     match cmd {
         Command::Help | Command::Start => {
             let text = format!(
@@ -185,17 +189,11 @@ async fn handle_command(
             let name = name.trim().to_string();
             if name.is_empty() {
                 let current = current_model(&app, msg.chat.id.0);
-                let shown = if current.is_empty() {
-                    "(llama.cpp default)".to_string()
-                } else {
-                    current
-                };
-                bot.send_message(msg.chat.id, format!("Current model: {shown}"))
-                    .await?;
+                let shown = if current.is_empty() { "(llama.cpp default)".to_string() } else { current };
+                bot.send_message(msg.chat.id, format!("Current model: {shown}")).await?;
             } else {
                 set_model(&app, msg.chat.id.0, name.clone());
-                bot.send_message(msg.chat.id, format!("Model set to {name}"))
-                    .await?;
+                bot.send_message(msg.chat.id, format!("Model set to {name}")).await?;
             }
         }
         Command::Clear => {
@@ -206,12 +204,7 @@ async fn handle_command(
     Ok(())
 }
 
-async fn handle_chat(
-    app: Arc<App>,
-    bot: Bot,
-    msg: Message,
-    text: String,
-) -> ResponseResult<()> {
+async fn handle_chat(app: Arc<App>, bot: Bot, msg: Message, text: String) -> ResponseResult<()> {
     let chat_id = msg.chat.id.0;
     let (model, history) = {
         let mut sessions = app.sessions.lock().expect("session lock");
@@ -356,11 +349,7 @@ fn chunk_message(text: &str) -> Vec<&str> {
     chunks
 }
 
-async fn keep_typing<T>(
-    bot: Bot,
-    chat_id: teloxide::types::ChatId,
-    fut: impl std::future::Future<Output = T>,
-) -> T {
+async fn keep_typing<T>(bot: Bot, chat_id: teloxide::types::ChatId, fut: impl std::future::Future<Output = T>) -> T {
     tokio::select! {
         result = fut => result,
         _ = async {

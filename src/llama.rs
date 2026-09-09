@@ -1,4 +1,7 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use std::fmt;
 use std::time::Duration;
 
@@ -88,11 +91,7 @@ impl LlamaClient {
     }
 
     fn url(&self, path: &str) -> String {
-        format!(
-            "{}/{}",
-            self.base_url,
-            path.trim_start_matches('/')
-        )
+        format!("{}/{}", self.base_url, path.trim_start_matches('/'))
     }
 
     pub async fn list_models(&self) -> Result<Vec<String>, LlamaError> {
@@ -112,17 +111,12 @@ impl LlamaClient {
                 "llama.cpp GET /v1/models returned {status}: {body}"
             )));
         }
-        let parsed: ModelsResponse = serde_json::from_str(&body).map_err(|e| {
-            LlamaError(format!("invalid /v1/models JSON ({e}): {body}"))
-        })?;
+        let parsed: ModelsResponse =
+            serde_json::from_str(&body).map_err(|e| LlamaError(format!("invalid /v1/models JSON ({e}): {body}")))?;
         Ok(parsed.data.into_iter().map(|m| m.id).collect())
     }
 
-    pub async fn chat(
-        &self,
-        model: &str,
-        messages: &[ChatMessage],
-    ) -> Result<String, LlamaError> {
+    pub async fn chat(&self, model: &str, messages: &[ChatMessage]) -> Result<String, LlamaError> {
         let request = ChatRequest {
             model,
             messages,
@@ -145,9 +139,8 @@ impl LlamaClient {
                 "llama.cpp POST /v1/chat/completions returned {status}: {body}"
             )));
         }
-        let parsed: ChatResponse = serde_json::from_str(&body).map_err(|e| {
-            LlamaError(format!("invalid /v1/chat/completions JSON ({e}): {body}"))
-        })?;
+        let parsed: ChatResponse = serde_json::from_str(&body)
+            .map_err(|e| LlamaError(format!("invalid /v1/chat/completions JSON ({e}): {body}")))?;
         let content = parsed
             .choices
             .into_iter()
