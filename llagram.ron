@@ -5,6 +5,15 @@
     ),
     llama: (
         url: "http://127.0.0.1:8080",
-        default_model: "",
+    ),
+    chat: (
+        summarize_every: 8,
+        summary_max_size: 2000,
+        prompts_dir: "prompts",
+    ),
+    db: (
+        sqlite: (
+            db_path: "llagram.sqlite",
+        ),
     ),
 )

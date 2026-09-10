@@ -5,16 +5,18 @@ version = "0.0.1"
 
 [dependencies]
 teloxide = {version = "0.17", default-features = false, features = ["macros", "rustls", "ctrlc_handler"]}
-tokio = { version = "1.53", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "signal"] }
 serde = {version = "1.0", features = ["derive"]}
 serde_json = "1"
 ron = "0.12"
-reqwest = { version = "0.13", default-features = false, features = ["blocking", "json", "stream", "rustls"] }
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "json", "query", "stream", "rustls"] }
 clap = { version = "4.6", features = ["derive"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+web-misc = {version = "0.1", features = ["sqlite"], git="https://gitlab.com/kimtinh/web-misc", branch="master"}
+sqlx = { version = "0.9", features = ["runtime-tokio", "tls-rustls-ring-native-roots", "time", "migrate"] }
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(all(target_os = "linux", not(target_arch = "aarch64")))'.dependencies]
 tikv-jemallocator = "0.7"
 
 [profile.release]
