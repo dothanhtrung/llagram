@@ -5,20 +5,12 @@ use tikv_jemallocator::Jemalloc;
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 
-mod api;
-mod config;
-mod db;
-mod llama;
-mod memory;
-mod prompts;
-mod skills;
-mod telegram;
-
-use crate::config::Config;
-use crate::llama::LlamaClient;
-use crate::prompts::Prompts;
-use crate::skills::Registry;
-use crate::telegram::App;
+use llagram::api;
+use llagram::config::Config;
+use llagram::llama::LlamaClient;
+use llagram::prompts::Prompts;
+use llagram::skills::Registry;
+use llagram::telegram::{self, App};
 use clap::Parser;
 use std::path::PathBuf;
 use std::sync::Arc;

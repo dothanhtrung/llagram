@@ -15,7 +15,7 @@ clap = { version = "4.6", features = ["derive"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 web-misc = {version = "0.1", features = ["sqlite"], git="https://gitlab.com/kimtinh/web-misc", branch="master"}
-sqlx = { version = "0.9", features = ["runtime-tokio", "tls-rustls-ring-native-roots", "time", "migrate"] }
+sqlx = { version = "0.9", features = ["runtime-tokio", "tls-rustls-ring-native-roots", "time", "migrate", "sqlite"] }
 
 [target.'cfg(all(target_os = "linux", not(target_arch = "aarch64")))'.dependencies]
 tikv-jemallocator = "0.7"
@@ -24,6 +24,13 @@ tikv-jemallocator = "0.7"
 strip = true
 lto = true
 codegen-units = 1
+
+[dev-dependencies]
+actix-web = { version = "4.15" }
+serde_json = "1"
+teloxide = { version = "0.17", default-features = false, features = ["macros", "rustls"] }
+tempfile = "3"
+tokio = { version = "1.53", features = ["rt-multi-thread", "macros"] }
 
 [profile.dev]
 opt-level = 1 # Enable a small amount of optimization in debug mode

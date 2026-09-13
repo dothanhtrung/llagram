@@ -68,6 +68,10 @@ impl SendResp {
     }
 }
 
+pub fn configure(cfg: &mut web::ServiceConfig) {
+    cfg.route("/send", web::post().to(send));
+}
+
 pub async fn run(cfg: ServerConfig, state: ApiState) -> std::io::Result<()> {
     let host = if cfg.listen_host.trim().is_empty() {
         "127.0.0.1".to_string()
@@ -80,7 +84,7 @@ pub async fn run(cfg: ServerConfig, state: ApiState) -> std::io::Result<()> {
     HttpServer::new(move || {
         actix_web::App::new()
             .app_data(web::Data::from(Arc::clone(&state)))
-            .route("/send", web::post().to(send))
+            .configure(configure)
     })
     .bind((host.as_str(), port))?
     .workers(1)
