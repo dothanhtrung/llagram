@@ -8,10 +8,19 @@ LLAGRAM
 [![Gitlab](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)](https://gitlab.com/kimtinh/llagram)
 [![Github](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/dothanhtrung/llagram)
 
+![](./screenshots/1.png)
+
 </div>
 
 
 A telegram bot that helps you chat with your local llama.cpp.
+
+Features:
+* [x] Chat with local llama.cpp through Telegram.
+* [x] Limit who can chat with the Telegram bot.
+* [x] Memory of each chat thread is stored separately in SQlite.
+* [x] Web fetch/search support.
+* [x] REST API for other applications to send message to Telegram or local LLM.
 
 How to use
 ----------

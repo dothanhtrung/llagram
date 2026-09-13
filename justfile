@@ -1,6 +1,6 @@
 #!/usr/bin/env just --justfile
 
-VERSION := `cargo pkgid | sed 's/.*#//'`
+VERSION := `cargo pkgid | sed -e 's/.*#//' -e 's/^.*@//'`
 
 linux:
     cargo build --release
@@ -8,6 +8,7 @@ linux:
     mkdir -p output/linux/llagram
     cp target/release/llagram output/linux/llagram/
     cp llagram.ron output/linux/llagram/
+    cp -r prompts output/linux/llagram/
     cd output/linux && tar cJvf llagram_{{VERSION}}.linux.x86-64.tar.xz llagram && mv llagram_{{VERSION}}.linux.x86-64.tar.xz ..
 
 linux-arm64:
@@ -16,6 +17,7 @@ linux-arm64:
     mkdir -p output/linux-arm64/llagram
     cp target/aarch64-unknown-linux-gnu/release/llagram output/linux-arm64/llagram/
     cp llagram.ron output/linux-arm64/llagram/
+    cp -r prompts output/linux-arm64/llagram/
     cd output/linux-arm64 && tar cJvf llagram_{{VERSION}}.linux.arm64.tar.xz llagram && mv llagram_{{VERSION}}.linux.arm64.tar.xz ..
 
 
