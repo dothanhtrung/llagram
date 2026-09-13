@@ -8,6 +8,7 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(3600);
 pub struct LlamaClient {
     http: reqwest::Client,
     base_url: String,
+    api_key: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -153,7 +154,7 @@ struct ChatChoiceMessage {
 }
 
 impl LlamaClient {
-    pub fn new(base_url: impl Into<String>) -> Result<Self, LlamaError> {
+    pub fn new(base_url: impl Into<String>, api_key: impl Into<String>) -> Result<Self, LlamaError> {
         let http = reqwest::Client::builder()
             .timeout(REQUEST_TIMEOUT)
             .tcp_keepalive(Duration::from_secs(15))
@@ -162,6 +163,7 @@ impl LlamaClient {
         Ok(Self {
             http,
             base_url: base_url.into().trim_end_matches('/').to_string(),
+            api_key: api_key.into(),
         })
     }
 
@@ -254,10 +256,14 @@ impl LlamaClient {
     ) -> Result<ChatTurn, LlamaError> {
         let request = self.request(messages, false, tools);
 
-        let response = self
+        let mut req = self
             .http
             .post(self.url("v1/chat/completions"))
-            .json(&request)
+            .json(&request);
+        if !self.api_key.is_empty() {
+            req = req.bearer_auth(&self.api_key);
+        }
+        let response = req
             .send()
             .await
             .map_err(|e| LlamaError(format!("failed to send chat request: {e}")))?;

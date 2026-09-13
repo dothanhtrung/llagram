@@ -40,6 +40,9 @@ pub struct TelegramConfig {
 pub struct LlamaConfig {
     #[serde(default)]
     pub url: String,
+    /// Bearer token for llama.cpp `--api-key`. Empty means no auth header.
+    #[serde(default)]
+    pub api_key: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]

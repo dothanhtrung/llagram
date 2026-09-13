@@ -60,7 +60,8 @@ async fn main() {
         .await
         .expect("failed to run sqlite migrations");
 
-    let llama = LlamaClient::new(config.llama.url.clone()).expect("failed to create llama.cpp client");
+    let llama = LlamaClient::new(config.llama.url.clone(), config.llama.api_key.clone())
+        .expect("failed to create llama.cpp client");
     let skills = Registry::builtin().expect("failed to load skills");
     let bot = teloxide::Bot::new(config.telegram.bot_token.clone());
     let me = teloxide::prelude::Requester::get_me(&bot)
