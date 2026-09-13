@@ -1,0 +1,29 @@
+image: "dothanhtrung/bevy-dev:latest"
+
+before_script:
+  - sed -i '/^target-dir =/d' .cargo/config.toml
+
+cache: &global_cache
+  key: cargo_cache
+  paths:
+    - target/
+    - .cargo/registry/index
+    - .cargo/registry/cache
+  policy: pull-push
+
+variables:
+  CARGO_HOME: ${CI_PROJECT_DIR}/.cargo
+  SQLX_OFFLINE: true
+
+test:
+  stage: test
+  script:
+    - rustc --version && cargo --version  # Print version info for debugging
+    - cargo test --tests
+    - find . -mtime +30 -print -delete || true
+  rules:
+    - changes:
+        - Cargo.toml
+        - src/**/*
+        - examples/**/*
+        - tests/**/*
