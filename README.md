@@ -11,7 +11,23 @@ LLAGRAM
 </div>
 
 
-Bridge for Telegram bot and local llama.cpp.
+A telegram bot that helps you chat with your local llama.cpp.
+
+How to use
+----------
+
+Download prebuilt binary from release page or build it by your self:
+```shell
+cargo build --release
+```
+
+Modify the `llagram.ron` to match with your local environment.
+
+Run the bot:
+```shell
+./llagram -c ./llagram.ron
+```
+
 
 ------
 
