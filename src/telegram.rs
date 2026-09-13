@@ -487,6 +487,7 @@ async fn prepare_turn(
 
 async fn start_new_thread(app: &App, msg: &Message) -> Result<db::Thread, String> {
     let user_id = telegram_user_id(msg).ok_or_else(|| "missing Telegram user id".to_string())?;
+    flush_current_thread(app, msg.chat.id.0).await;
     let thread = db::create_thread(&app.pool, user_id)
         .await
         .map_err(|e| e.to_string())?;
@@ -524,6 +525,7 @@ async fn load_thread(app: &App, msg: &Message, thread_id: i64) -> Result<db::Thr
     if thread.user_id != user_id {
         return Err(format!("Thread {thread_id} not found."));
     }
+    flush_current_thread(app, msg.chat.id.0).await;
     apply_thread(app, msg.chat.id.0, &thread);
     db::set_current_thread(&app.pool, user_id, Some(thread.id))
         .await
@@ -599,6 +601,24 @@ async fn summarize_thread(app: &App, chat_id: i64, thread_id: i64) -> Result<(),
     tracing::info!("updated summary for thread {thread_id}");
     Ok(())
 }
+/// Summarize and persist the current thread's in-memory history before it is replaced.
+async fn flush_current_thread(app: &App, chat_id: i64) {
+    let (thread_id, has_history) = {
+        let sessions = app.sessions.lock().expect("session lock");
+        match sessions.get(&chat_id) {
+            Some(session) => (session.thread_id, !session.history.is_empty()),
+            None => (None, false),
+        }
+    };
+    if let Some(thread_id) = thread_id {
+        if has_history {
+            if let Err(err) = summarize_thread(app, chat_id, thread_id).await {
+                tracing::error!("thread {thread_id} summary failed: {err}");
+            }
+        }
+    }
+}
+
 
 fn session_mut(sessions: &mut HashMap<i64, Session>, chat_id: i64) -> &mut Session {
     sessions.entry(chat_id).or_insert_with(|| Session {
