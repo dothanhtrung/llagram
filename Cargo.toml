@@ -4,6 +4,7 @@ edition = "2024"
 version = "0.0.1"
 
 [dependencies]
+actix-web = { version = "4.15" }
 teloxide = {version = "0.17", default-features = false, features = ["macros", "rustls", "ctrlc_handler"]}
 tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "signal"] }
 serde = {version = "1.0", features = ["derive"]}

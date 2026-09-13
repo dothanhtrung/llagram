@@ -7,6 +7,11 @@
         url: "http://127.0.0.1:8080",
         api_key: "",
     ),
+    server: (
+        listen_host: "127.0.0.1",
+        listen_port: 53755,
+        api_key: "",
+    ),
     chat: (
         summarize_every: 8,
         summary_max_size: 2000,

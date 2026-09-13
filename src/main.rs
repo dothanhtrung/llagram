@@ -5,6 +5,7 @@ use tikv_jemallocator::Jemalloc;
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 
+mod api;
 mod config;
 mod db;
 mod llama;
@@ -78,6 +79,14 @@ async fn main() {
         bot_username
     );
 
+    let api_state = api::ApiState {
+        bot: bot.clone(),
+        llama: llama.clone(),
+        prompts: prompts.clone(),
+        allow_users: config.telegram.allow_users.clone(),
+        api_key: config.server.api_key.clone(),
+    };
+
     let app = Arc::new(App::new(
         bot_username,
         config.telegram.allow_users.clone(),
@@ -91,6 +100,11 @@ async fn main() {
 
     tokio::select! {
         _ = telegram::run(bot, app) => {}
+        res = api::run(config.server.clone(), api_state) => {
+            if let Err(err) = res {
+                tracing::error!("HTTP API server failed: {err}");
+            }
+        }
         code = shutdown_signal() => {
             tracing::info!("signal received, exiting");
             std::process::exit(code);

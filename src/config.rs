@@ -16,6 +16,14 @@ fn default_prompts_dir() -> PathBuf {
     PathBuf::from("prompts")
 }
 
+fn default_listen_host() -> String {
+    "127.0.0.1".to_string()
+}
+
+fn default_listen_port() -> u16 {
+    53755
+}
+
 #[derive(Debug, Default, Deserialize, Clone)]
 pub struct Config {
     #[serde(default)]
@@ -26,6 +34,29 @@ pub struct Config {
     pub chat: ChatConfig,
     #[serde(default)]
     pub db: DBConfig,
+    #[serde(default)]
+    pub server: ServerConfig,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct ServerConfig {
+    #[serde(default = "default_listen_host")]
+    pub listen_host: String,
+    #[serde(default = "default_listen_port")]
+    pub listen_port: u16,
+    /// API key for this llagram HTTP server (not llama.cpp).
+    #[serde(default)]
+    pub api_key: String,
+}
+
+impl Default for ServerConfig {
+    fn default() -> Self {
+        Self {
+            listen_host: default_listen_host(),
+            listen_port: default_listen_port(),
+            api_key: String::new(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Deserialize, Clone)]
